@@ -12,6 +12,7 @@
 
 ## Библеотеки использующийся в боте:
 1. [PyTelegrambotApi](https://pypi.org/project/telebot/)
+2. [sqlite3](https://docs.python.org/3/library/sqlite3.html)
 
 ### Разработчик - [s3muan](https://s3muan.github.io)
 
