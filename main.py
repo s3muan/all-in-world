@@ -1,10 +1,16 @@
 import telebot
-from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
+from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, BotCommand
 import answers
 import db
-from ai import ii
+import ii
 
 bot = telebot.TeleBot("8572737959:AAFSxwZJ6ftj4bjzfaP7_YfXC8DY4qxToGw")
+
+com = []
+for command in answers.commands.keys():
+    com.append(BotCommand(command, answers.commands[command]))
+print(com)
+bot.set_my_commands(com)
 
 @bot.message_handler(commands=['start'])
 def start(m):
@@ -50,6 +56,22 @@ def callback(call):
         msg = bot.send_message(call.message.chat.id, "Введите новый текст для ответа")
         bot.register_next_step_handler(msg, change_ans, call.data.replace("changeans", ""))
 
+    elif call.data == 'changecom':
+        mar = InlineKeyboardMarkup()
+        for i in answers.commands:
+            mar.row(InlineKeyboardButton(callback_data=i, text=answers.commands[i]))
+        bot.send_message(call.message.chat.id, "Выберите команду для изменения текста", reply_markup=mar)
+
+    elif call.data in answers.commands.keys():
+        msg = bot.send_message(call.message.chat.id, "Введите новый текст для команды")
+        bot.register_next_step_handler(msg, change_com, call.data)
+
+def change_com(message, com):
+    answers.commands[com] = message.text
+    for command in answers.commands:
+        bot.set_my_commands([telebot.types.BotCommand(command, answers.commands[command])])
+    bot.send_message(message.chat.id, "Текст команды изменен.")
+
 def change_ans(message, ans):
     answers.answers[ans] = message.text
     bot.send_message(message.chat.id, "Текст ответа изменен.")
@@ -77,14 +99,18 @@ def process_bug(message):
 
 @bot.message_handler(commands=['setadmin'])
 def set_admin(m):
-    admins = db.get_admins()
-    m = m.split()
-    if m[1].text in admins:
-        bot.send_message(m.chat.id, "Пользователь уже является администратором.")
-    else:
-        m[1].text = m[1].text.replace('@', '')
-        db.add_admin(m[1].text)
-        bot.send_message(m.chat.id, "Пользователь добавлен в список администраторов.")
+    try:
+        admins = db.get_admins()
+        m.text = m.text.split()
+        if m.text[1] in admins:
+            bot.send_message(m.chat.id, "Пользователь уже является администратором.")
+        else:
+            m.text[1] = m.text[1].replace('@', '')
+            db.add_admin(m.text[1])
+            bot.send_message(m.chat.id, "Пользователь добавлен в список администраторов.")
+    except Exception as e:
+        bot.send_message(m.chat.id, "Пожалуйста, укажите имя пользователя после команды. Например: /setadmin @username ")
+        bot.send_message(m.chat.id, "Ошибка: " + str(e))
     
 @bot.message_handler(commands=["admin"])
 def admin_panel(m):
@@ -96,9 +122,11 @@ def admin_panel(m):
         b1 = InlineKeyboardButton("Изменить текст кнопок", callback_data='changebut')
         b2 = InlineKeyboardButton("Изменить приветсвеное сообщение", callback_data='changehi')
         b3 = InlineKeyboardButton("Изменить ответы на вопросы", callback_data='changeans')
+        b4 = InlineKeyboardButton("Изменить список команд", callback_data='changecom')
         mar.row(b1)
         mar.row(b2)
         mar.row(b3)
+        mar.row(b4)
         bot.send_message(m.chat.id, "Панель администратора", reply_markup=mar)
     else:
         bot.send_message(m.chat.id, "У вас нет доступа к этой команде.")
