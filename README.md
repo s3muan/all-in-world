@@ -31,6 +31,13 @@
 
 ---
 
+## 🚩 Используемые инструменты 
+
+- `python 3.11.9`
+- `Visual Studio Code`
+
+---
+
 ## 👨‍💻 Разработчик
 
 [s3muan](https://s3muan.github.io)
