@@ -9,6 +9,8 @@ def create_db():
     conn.commit()
     conn.close()
 
+
+
 def add_bug(userid, question):
     conn = sqlite3.connect('all.db')
     c = conn.cursor()

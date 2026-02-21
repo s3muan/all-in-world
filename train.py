@@ -341,16 +341,14 @@ df = pd.DataFrame(data)
 print(df)
 
 X_train, X_test, y_train, y_test = train_test_split(
-    df["text"], df["label"], test_size=0.2, random_state=42
+    data["text"], data["label"], test_size=0.2, random_state=42
 )
-print(X_train, y_train, X_test, y_test)
 # 2. Создаем пайплайн
 model = Pipeline([
     ("vectorizer", CountVectorizer()),
     ("classifier", LogisticRegression())
 ])
 
-print(model)
 # 3. Обучаем модель
 model.fit(X_train, y_train)\
 
@@ -358,10 +356,5 @@ y_pred = model.predict(X_test)
 
 print("\nAccuracy:", accuracy_score(y_test, y_pred))
 
-print("\nClassification Report:")
-print(classification_report(y_test, y_pred))
-
-print("\nConfusion Matrix:")
-print(confusion_matrix(y_test, y_pred))
-
+joblib.dump(model, "faq_model.pkl")
 

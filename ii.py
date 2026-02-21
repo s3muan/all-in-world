@@ -8,6 +8,7 @@ model = joblib.load("faq_model.pkl")
 def resp(question):
     print("Вопрос:", question)
     prediction = model.predict([question])
+    print(model.predict_proba([question]))
     print("Предсказанный класс:", prediction[0])
     return prediction[0]
 
@@ -17,3 +18,5 @@ def test():
         if question.lower() == 'exit':
             break
         resp(question)
+
+test()
