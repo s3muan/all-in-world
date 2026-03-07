@@ -5,7 +5,7 @@ import db
 import ii
 import json
 
-bot = telebot.TeleBot("8572737959:AAFSxwZJ6ftj4bjzfaP7_YfXC8DY4qxToGw")
+bot = telebot.TeleBot("")
 
 com = []
 for command in answers.commands.keys():
